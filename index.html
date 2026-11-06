@@ -7,6 +7,8 @@
   <meta name="description" content="이하영의 Offbeat 웹앱 포탈 — 업무용 웹앱 바로가기">
   <title>이하영의 Offbeat 웹앱 포탈</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -111,24 +113,45 @@
   </div>
 
   <script>
-    // Keep only the most recently left item highlighted in light gray.
-    // Actual hover remains black; touch interaction does not create trails.
+    // A visited item turns gray briefly, then clears itself after 500 ms.
+    // Mouse hover stays black; touch interaction never leaves a trail.
     (() => {
       const links = document.querySelectorAll(".app-link");
+      const trailTimers = new WeakMap();
+
+      const clearTrail = (link) => {
+        const timer = trailTimers.get(link);
+        if (timer !== undefined) {
+          clearTimeout(timer);
+          trailTimers.delete(link);
+        }
+        link.classList.remove("is-trailing");
+      };
 
       for (const link of links) {
         link.addEventListener("pointerenter", ({ pointerType }) => {
-          if (pointerType === "mouse" || pointerType === "pen") {
-            link.classList.remove("is-trailing");
-          }
+          if (pointerType !== "mouse" && pointerType !== "pen") return;
+          clearTrail(link);
         });
 
         link.addEventListener("pointerleave", ({ pointerType }) => {
           if (pointerType !== "mouse" && pointerType !== "pen") return;
-          for (const item of links) item.classList.remove("is-trailing");
+          clearTrail(link);
           link.classList.add("is-trailing");
+          const timer = setTimeout(() => {
+            link.classList.remove("is-trailing");
+            trailTimers.delete(link);
+          }, 500);
+          trailTimers.set(link, timer);
         });
       }
+
+      // Don't keep an expired highlight when returning from another tab.
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          for (const link of links) clearTrail(link);
+        }
+      });
     })();
   </script>
 </body>
