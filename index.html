@@ -109,5 +109,27 @@
 
     <footer class="page-footer">OFFBEAT © 2026</footer>
   </div>
+
+  <script>
+    // Keep only the most recently left item highlighted in light gray.
+    // Actual hover remains black; touch interaction does not create trails.
+    (() => {
+      const links = document.querySelectorAll(".app-link");
+
+      for (const link of links) {
+        link.addEventListener("pointerenter", ({ pointerType }) => {
+          if (pointerType === "mouse" || pointerType === "pen") {
+            link.classList.remove("is-trailing");
+          }
+        });
+
+        link.addEventListener("pointerleave", ({ pointerType }) => {
+          if (pointerType !== "mouse" && pointerType !== "pen") return;
+          for (const item of links) item.classList.remove("is-trailing");
+          link.classList.add("is-trailing");
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

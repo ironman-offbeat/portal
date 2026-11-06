@@ -133,16 +133,31 @@ h1 {
 }
 
 .app-link:focus-visible {
-  background: #050505;
-  color: #ffffff;
-  outline: 3px solid #050505;
+  outline: 2px solid #050505;
   outline-offset: 3px;
+}
+
+/* Keep keyboard focus visible without leaving a black hover block behind. */
+.app-link:focus-visible:not(:hover) {
+  background: #e9e9e9;
+  color: #050505;
 }
 
 .app-link:active {
   background: #050505;
   color: #ffffff;
   transform: scale(0.995);
+}
+
+/* One light-gray trail: the most recently hovered item, never a black ghost. */
+.app-link.is-trailing {
+  background: #e9e9e9;
+  color: #050505;
+  transform: none;
+}
+
+.app-link.is-trailing .app-name {
+  transform: none;
 }
 
 .page-footer {
